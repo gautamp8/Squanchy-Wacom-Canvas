@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://getbootstrap.com/examples/starter-template/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+
+    <title>Starter Template for Bootstrap</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <style type="text/css">
+      html, body {
+        margin: 0; 
+        height: 100%; 
+        overflow-x: hidden
+      }
+
+      #canvas{
+        
+        border:1px dashed #000000
+      }
+      .controls{
+        position: fixed;
+        top:5px;
+        z-index: +1000;
+      }
+      span{
+        cursor: pointer;
+      }
+      
+      #videoElement{
+        position: fixed;
+        top: 5px;
+        right: 5px;
+        z-index: +1000;
+      }
+      .controls{
+        background: white;
+        opacity: 0.8;
+      }
+      #youtube{
+        position: fixed;
+        top: 200px;
+        right: 5px;
+        z-index: +1000;
+      }
+
+    </style>
+    <!-- WACOM SCRIPT <script type="text/javascript" src="canvasJS.js"></script> -->
+    <script type="text/javascript" src="fabric.js"></script>
+  </head>
+
+  <body>
+
+
+    <div class="container-fluid">
+
+      <div class='controls'>
+
+          <div class="form-group">
+            <div class="col-md-3">
+                <h4>Squanchy Canvas 😺 😸</h4>
+                <iframe id="WikiFrame" width="600" height="600"></iframe>
+                <Script>
+                  window.frames["WikiFrame"].location.replace("http://" + "en" + ".wikipedia.org/w/index.php?title=" + "Chromium" + "&printable=yes");
+                </Script>
+            </div>
+
+           <!--  <div class="col-md-3">
+              <div class="input-group">
+                <input id="image_url" name="image_url" class="form-control" placeholder="Image URL" type="text">
+                <span class="input-group-addon" onclick='add_image()'>Add Image</span>
+              </div>
+            </div> -->
+
+           <!--  <div class="col-md-3">
+              <div class="input-group">
+                <input id="youtube_url" name="youtube_url" class="form-control" placeholder="Youtube Id" type="text">
+                <span class="input-group-addon" onclick='add_youtube()'>Add Video</span>
+              </div>
+              
+            </div> -->
+          </div>
+      </div>
+
+      <!-- <video width='500px' height='250px' autoplay="true" id="videoElement" class='draggable'></video> -->
+
+      <!-- <canvas id="canvas" width="1600px" height="10000px"></canvas> -->
+
+      <!-- <div id='youtube' class='draggable'>
+        <img src="http://okfoc.us/franc/handopen.gif" width="20px">
+        <iframe width="280" height="157" src="https://www.youtube.com/embed/hgT-z0G6nko?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+      </div> -->
+    </div>
+
+    <script>
+        (function() {
+
+          if (document.location.hostname === 'localhost') {
+            var links = document.getElementById('header').getElementsByTagName('a');
+            for (var i = 0, len = links.length; i < len; i++) {
+              // very retarted fix but fuck it
+              links[i].href = links[i].href.replace('fabricjs.com', 'localhost:4000');
+            }
+          }
+          else {
+            var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+            s.async = true;
+            s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+            t.parentNode.insertBefore(s, t);
+
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+          }
+        })();
+</script>
+
+
+<div id="bd-wrapper" ng-controller="CanvasControls">
+    <style>
+      #drawing-mode {
+        margin-bottom: 10px;
+        vertical-align: top;
+      }
+      #drawing-mode-options {
+        display: inline-block;
+        vertical-align: top;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        background: #f5f2f0;
+        padding: 10px;
+      }
+      label {
+        display: inline-block; width: 130px;
+      }
+      .info {
+        display: inline-block;
+        width: 25px;
+        background: #ffc;
+      }
+      #bd-wrapper {
+        min-width: 1500px;
+      }
+</style>
+
+<canvas id="c" width="500" height="500" style="border:1px solid #aaa"></canvas>
+
+<div style="display: inline-block; margin-left: 10px">
+  <button id="drawing-mode" class="btn btn-info">Cancel drawing mode</button><br>
+  <button id="clear-canvas" class="btn btn-info">Clear</button><br>
+
+  <div id="drawing-mode-options">
+    <label for="drawing-mode-selector">Mode:</label>
+    <select id="drawing-mode-selector">
+      <option>Pencil</option>
+      <option>Circle</option>
+      <option>Spray</option>
+      <option>Pattern</option>
+
+      <option>hline</option>
+      <option>vline</option>
+      <option>square</option>
+      <option>diamond</option>
+      <option>texture</option>
+    </select><br>
+
+    <label for="drawing-line-width">Line width:</label>
+    <span class="info">30</span><input type="range" value="30" min="0" max="150" id="drawing-line-width"><br>
+
+    <label for="drawing-color">Line color:</label>
+    <input type="color" value="#005E7A" id="drawing-color"><br>
+
+    <label for="drawing-shadow-color">Shadow color:</label>
+    <input type="color" value="#005E7A" id="drawing-shadow-color"><br>
+
+    <label for="drawing-shadow-width">Shadow width:</label>
+    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-width"><br>
+
+    <label for="drawing-shadow-offset">Shadow offset:</label>
+    <span class="info">0</span><input type="range" value="0" min="0" max="50" id="drawing-shadow-offset"><br>
+  </div>
+</div>
+
+<script id="main">(function() {
+        var $ = function(id){return document.getElementById(id)};
+
+        var canvas = this.__canvas = new fabric.Canvas('c', {
+          isDrawingMode: true
+        });
+
+        fabric.Object.prototype.transparentCorners = false;
+
+        var drawingModeEl = $('drawing-mode'),
+            drawingOptionsEl = $('drawing-mode-options'),
+            drawingColorEl = $('drawing-color'),
+            drawingShadowColorEl = $('drawing-shadow-color'),
+            drawingLineWidthEl = $('drawing-line-width'),
+            drawingShadowWidth = $('drawing-shadow-width'),
+            drawingShadowOffset = $('drawing-shadow-offset'),
+            clearEl = $('clear-canvas');
+
+        clearEl.onclick = function() { canvas.clear() };
+
+        drawingModeEl.onclick = function() {
+          canvas.isDrawingMode = !canvas.isDrawingMode;
+          if (canvas.isDrawingMode) {
+            drawingModeEl.innerHTML = 'Cancel drawing mode';
+            drawingOptionsEl.style.display = '';
+          }
+          else {
+            drawingModeEl.innerHTML = 'Enter drawing mode';
+            drawingOptionsEl.style.display = 'none';
+          }
+        };
+
+        if (fabric.PatternBrush) {
+          var vLinePatternBrush = new fabric.PatternBrush(canvas);
+          vLinePatternBrush.getPatternSrc = function() {
+
+            var patternCanvas = fabric.document.createElement('canvas');
+            patternCanvas.width = patternCanvas.height = 10;
+            var ctx = patternCanvas.getContext('2d');
+
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, 5);
+            ctx.lineTo(10, 5);
+            ctx.closePath();
+            ctx.stroke();
+
+            return patternCanvas;
+          };
+
+          var hLinePatternBrush = new fabric.PatternBrush(canvas);
+          hLinePatternBrush.getPatternSrc = function() {
+
+            var patternCanvas = fabric.document.createElement('canvas');
+            patternCanvas.width = patternCanvas.height = 10;
+            var ctx = patternCanvas.getContext('2d');
+
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(5, 0);
+            ctx.lineTo(5, 10);
+            ctx.closePath();
+            ctx.stroke();
+
+            return patternCanvas;
+          };
+
+          var squarePatternBrush = new fabric.PatternBrush(canvas);
+          squarePatternBrush.getPatternSrc = function() {
+
+            var squareWidth = 10, squareDistance = 2;
+
+            var patternCanvas = fabric.document.createElement('canvas');
+            patternCanvas.width = patternCanvas.height = squareWidth + squareDistance;
+            var ctx = patternCanvas.getContext('2d');
+
+            ctx.fillStyle = this.color;
+            ctx.fillRect(0, 0, squareWidth, squareWidth);
+
+            return patternCanvas;
+          };
+
+          var diamondPatternBrush = new fabric.PatternBrush(canvas);
+          diamondPatternBrush.getPatternSrc = function() {
+
+            var squareWidth = 10, squareDistance = 5;
+            var patternCanvas = fabric.document.createElement('canvas');
+            var rect = new fabric.Rect({
+              width: squareWidth,
+              height: squareWidth,
+              angle: 45,
+              fill: this.color
+            });
+
+            var canvasWidth = rect.getBoundingRectWidth();
+
+            patternCanvas.width = patternCanvas.height = canvasWidth + squareDistance;
+            rect.set({ left: canvasWidth / 2, top: canvasWidth / 2 });
+
+            var ctx = patternCanvas.getContext('2d');
+            rect.render(ctx);
+
+            return patternCanvas;
+          };
+
+          var img = new Image();
+          img.src = '../assets/honey_im_subtle.png';
+
+          var texturePatternBrush = new fabric.PatternBrush(canvas);
+          texturePatternBrush.source = img;
+        }
+
+        $('drawing-mode-selector').onchange = function() {
+
+          if (this.value === 'hline') {
+            canvas.freeDrawingBrush = vLinePatternBrush;
+          }
+          else if (this.value === 'vline') {
+            canvas.freeDrawingBrush = hLinePatternBrush;
+          }
+          else if (this.value === 'square') {
+            canvas.freeDrawingBrush = squarePatternBrush;
+          }
+          else if (this.value === 'diamond') {
+            canvas.freeDrawingBrush = diamondPatternBrush;
+          }
+          else if (this.value === 'texture') {
+            canvas.freeDrawingBrush = texturePatternBrush;
+          }
+          else {
+            canvas.freeDrawingBrush = new fabric[this.value + 'Brush'](canvas);
+          }
+
+          if (canvas.freeDrawingBrush) {
+            canvas.freeDrawingBrush.color = drawingColorEl.value;
+            canvas.freeDrawingBrush.width = parseInt(drawingLineWidthEl.value, 10) || 1;
+            canvas.freeDrawingBrush.shadowBlur = parseInt(drawingShadowWidth.value, 10) || 0;
+          }
+        };
+
+        drawingColorEl.onchange = function() {
+          canvas.freeDrawingBrush.color = this.value;
+        };
+        drawingShadowColorEl.onchange = function() {
+          canvas.freeDrawingBrush.shadowColor = this.value;
+        };
+        drawingLineWidthEl.onchange = function() {
+          canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
+          this.previousSibling.innerHTML = this.value;
+        };
+        drawingShadowWidth.onchange = function() {
+          canvas.freeDrawingBrush.shadowBlur = parseInt(this.value, 10) || 0;
+          this.previousSibling.innerHTML = this.value;
+        };
+        drawingShadowOffset.onchange = function() {
+          canvas.freeDrawingBrush.shadowOffsetX =
+          canvas.freeDrawingBrush.shadowOffsetY = parseInt(this.value, 10) || 0;
+          this.previousSibling.innerHTML = this.value;
+        };
+
+        if (canvas.freeDrawingBrush) {
+          canvas.freeDrawingBrush.color = drawingColorEl.value;
+          canvas.freeDrawingBrush.width = parseInt(drawingLineWidthEl.value, 10) || 1;
+          canvas.freeDrawingBrush.shadowBlur = 0;
+        }
+      })();
+  </script>
+</div>
+
+
+  </body>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.3/fabric.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src='interact.min.js'></script>
+
+    <!-- General Stuff -->
+    <script>
+
+        $(document).ready(function() {
+           //TogetherJS(this); return false;
+        });
+
+        function add_image(){
+          var image_url = $('#image_url').val();
+          if (!image_url){return};
+          fabric.Image.fromURL(image_url, function(oImg) {
+            // scale image down, and flip it, before adding it onto canvas
+            oImg.scale(0.5).setFlipX(false);
+            canvas.add(oImg);
+          });
+
+        };
+
+        function add_youtube(){
+            // $("#youtube").html('<iframe width="560" height="315" src="https://www.youtube.com/embed/hgT-z0G6nko?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>');
+
+            var newNode = document.createElement('div');
+            newNode.className = 'draggable';
+            newNode.append('<img src="http://okfoc.us/franc/handopen.gif" width="20px"><iframe width="560" height="315" src="https://www.imgur.com/TsVzD3m.mp4" frameborder="0" allowfullscreen></iframe>');
+            
+        };
+
+        var canvas = new fabric.Canvas('canvas');
+
+        // var video1El = document.getElementById('video1');
+
+        // var video1 = new fabric.Image(video1El, {
+        //   left: 0,
+        //   top: 0,
+        //   angle: -15,
+        //   originX: 'center',
+        //   originY: 'center'
+        // });
+
+
+        // canvas.add(video1);
+        // video1.getElement().play();
+
+
+        fabric.util.requestAnimFrame(function render() {
+          canvas.renderAll();
+          fabric.util.requestAnimFrame(render);
+        });
+
+        fabric.Image.fromURL('https://www.nyfa.edu/img/locations/la-hollywood-sign.jpg', function(oImg) {
+          // scale image down, and flip it, before adding it onto canvas
+          oImg.scale(1).setFlipX(false);
+          canvas.add(oImg);
+        });
+
+        // canvas.add(new fabric.Circle({ radius: 30, fill: '#f55', top: 100, left: 100 }));
+
+        canvas.selectionColor = 'rgba(0,255,0,0.3)';
+        canvas.selectionBorderColor = 'grey';
+        canvas.selectionLineWidth = 1;
+    </script>
+
+    <!-- Draggable script code -->
+    <script type="text/javascript">
+        interact('.draggable')
+          .draggable({
+            // enable inertial throwing
+            inertia: true,
+            // keep the element within the area of it's parent
+            restrict: {
+              restriction: "parent",
+              endOnly: true,
+              elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+            },
+            // enable autoScroll
+            autoScroll: true,
+
+            // call this function on every dragmove event
+            onmove: dragMoveListener,
+            // call this function on every dragend event
+            onend: function (event) {
+              var textEl = event.target.querySelector('p');
+
+              textEl && (textEl.textContent =
+                'moved a distance of '
+                + (Math.sqrt(event.dx * event.dx +
+                             event.dy * event.dy)|0) + 'px');
+            }
+          });
+
+          function dragMoveListener (event) {
+              var target = event.target,
+                  // keep the dragged position in the data-x/data-y attributes
+                  x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                  y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+              // translate the element
+              target.style.webkitTransform =
+              target.style.transform =
+                'translate(' + x + 'px, ' + y + 'px)';
+
+              // update the posiion attributes
+              target.setAttribute('data-x', x);
+              target.setAttribute('data-y', y);
+            }
+    </script>
+
+    <!-- Video element JS -->
+    <script type="text/javascript">
+
+      var video = document.querySelector("#videoElement");
+      var hdConstraints = {
+        video: {
+          mandatory: {
+            minWidth: 1280,
+            minHeight: 720
+          }
+        }
+      };
+      var vgaConstraints = {
+        video: {
+          mandatory: {
+            maxWidth: 640,
+            maxHeight: 360
+          }
+        }
+      };
+
+      var constraints = {
+          audio: true,
+          video: {
+              height: { min: 1024, ideal: 1280, max: 1920 },
+              width: { min: 576, ideal: 720, max: 1080 },
+          }
+      };
+
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+       
+      if (navigator.getUserMedia) {       
+          //navigator.getUserMedia({video: true}, handleVideo, videoError);
+          navigator.getUserMedia(constraints, handleVideo, videoError);
+          //navigator.getUserMedia(audio: true, video: { width: 1280, height: 720 }, handleVideo, videoError);
+      }
+       
+      function handleVideo(stream) {
+          video.src = window.URL.createObjectURL(stream);
+      }
+      
+      // navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+      //     function(stream) {
+      //       var video = document.querySelector('video');
+      //       video.src = window.URL.createObjectURL(stream);
+      //       video.onloadedmetadata = function(e) {
+      //       video.play();
+      //     };
+      //   },
+      //   function(err) {
+      //     console.log("The following error occured: " + err.name);
+      //   }
+      // );
+
+      function videoError(e) {
+          // do something
+      }
+    </script>
+  
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://getbootstrap.com/examples/starter-template/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    
+    <style type="text/css">
+      html, body {margin: 0; height: 100%; overflow: hidden}
+      #videoElement{
+        width: 100%;
+        height: 100%;
+      }
+      .lft{
+        border: 1px black dashed;
+        height: 100%;
+      }
+      .rgt{
+        border: 1px black dashed;
+        height: 100%;
+      }
+      .row{
+        border: 1px black dashed;
+        height: 100%;
+      }
+      .container-fluid{
+        height: 100%;
+      }
+    </style>
+
+  </head>
+
+  <body cz-shortcut-listen="true">
+
+    <div class="container-fluid">
+
+      <div class="starter-template">
+        <h1>Squanchy Canvas</h1>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-8 lft">.col-md-8</div>
+        <div class="col-lg-4 rgt">
+            <canvas id="c"></canvas>
+            <video autoplay="true" id="videoElement"></video>
+
+        </div>
+      </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+
+      var video = document.querySelector("#videoElement");
+      var hdConstraints = {
+        video: {
+          mandatory: {
+            minWidth: 1280,
+            minHeight: 720
+          }
+        }
+      };
+      var vgaConstraints = {
+        video: {
+          mandatory: {
+            maxWidth: 640,
+            maxHeight: 360
+          }
+        }
+      };
+
+      var constraints = {
+          audio: true,
+          video: {
+              height: { min: 1024, ideal: 1280, max: 1920 },
+              width: { min: 576, ideal: 720, max: 1080 },
+          }
+      };
+
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+       
+      if (navigator.getUserMedia) {       
+          //navigator.getUserMedia({video: true}, handleVideo, videoError);
+          navigator.getUserMedia(constraints, handleVideo, videoError);
+          //navigator.getUserMedia(audio: true, video: { width: 1280, height: 720 }, handleVideo, videoError);
+      }
+       
+      function handleVideo(stream) {
+          video.src = window.URL.createObjectURL(stream);
+      }
+      
+      // navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+      //     function(stream) {
+      //       var video = document.querySelector('video');
+      //       video.src = window.URL.createObjectURL(stream);
+      //       video.onloadedmetadata = function(e) {
+      //       video.play();
+      //     };
+      //   },
+      //   function(err) {
+      //     console.log("The following error occured: " + err.name);
+      //   }
+      // );
+
+      function videoError(e) {
+          // do something
+      }
+
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function(){
+          var v = document.getElementById('videoElement');
+          var canvas = document.getElementById('c');
+          var context = canvas.getContext('2d');
+
+          var cw = Math.floor(canvas.clientWidth / 100);
+          var ch = Math.floor(canvas.clientHeight / 100);
+          canvas.width = cw;
+          canvas.height = ch;
+          draw(this,context,cw,ch);
+          v.addEventListener('play', function(){
+              draw(this,context,cw,ch);
+          },false);
+
+      },false);
+
+      function draw(v,c,w,h) {
+          if(v.paused || v.ended) return false;
+          c.drawImage(v,0,0,w,h);
+          setTimeout(draw,20,v,c,w,h);
+      }
+    </script>
+
+  </body>
+
+</html>
