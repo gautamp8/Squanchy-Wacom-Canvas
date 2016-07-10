@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://getbootstrap.com/examples/starter-template/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+
+    <title>Squanchy Canvas</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <style type="text/css">
+      html, body {
+        margin: 0; 
+        height: 100%; 
+        overflow-x: hidden
+      }
+
+      #canvas{
+        border:1px dashed #000000
+      }
+      .controls{
+        position: fixed;
+        top:5px;
+        z-index: +1000;
+      }
+      span{
+        cursor: pointer;
+      }
+      
+      #videoElement{
+        position: fixed;
+        top: 5px;
+        right: 0px;
+        z-index: +1000;
+        resize: both;
+        opacity: 0.8;
+      }
+      .controls{
+        background: white;
+        opacity: 0.8;
+      }
+      .overlay{
+        position: fixed;
+        top: 200px;
+        right: 5px;
+        z-index: +1000;
+      }
+      .translucent{
+        opacity: 0.8
+      }
+      #simple_sketch{
+        border: 2px dashed;
+      }
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <div class="container-fluid">
+
+      <div class='controls'>
+
+          <div class="form-group">
+            <div class="col-md-3">
+                <h4>Squanchy Canvas 😺 😸</h4>
+            </div>
+
+            <div class="col-md-2">
+              <div class="input-group">
+                <input id="image_url" name="image_url" class="form-control" placeholder="Image URL" type="text">
+                <span class="input-group-addon" onclick='add_image()'>Add Image</span>
+              </div>
+            </div>
+
+            <div class="col-md-2">
+              <div class="input-group">
+                <input id="youtube_id" name="youtube_id" class="form-control" placeholder="Youtube Id" type="text">
+                <span class="input-group-addon" onclick='add_youtube()'>Add Video</span>
+              </div>
+            </div>
+
+
+          </div>
+      </div>
+
+      <div class='draggable overlay'>
+        <video width='500px' height='250px' autoplay="true" id="videoElement"></video>
+      </div>
+      
+
+      <canvas id="simple_sketch" width="2000" height="6000"></canvas>
+
+      <div class='draggable overlay'>
+        <img src="http://okfoc.us/franc/handopen.gif" width="20px">
+        <object type="text/html" data="https://en.m.wikipedia.org/w/index.php?title=Elon_Musk&printable=yes"
+              style="width:400px; height:800px; margin:1%;">
+        </object>
+      </div>
+
+    </div>
+
+
+  </body>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.3/fabric.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src='interact.min.js'></script>
+    <script type="text/javascript" src='sketch.min.js'></script>
+
+    <script type="text/javascript">
+        $(function() {
+          $('#simple_sketch').sketch();
+        });
+      </script>
+
+    <!-- General Stuff -->
+    <script>
+
+        $(document).ready(function() {
+           //TogetherJS(this); return false;
+        });
+
+        function add_image(){
+          var image_url = $('#image_url').val();
+          if (!image_url){return};
+          
+          var el =  document.createElement("div")
+          el.className = 'draggable overlay translucent';
+          el.innerHTML = '<img src="http://okfoc.us/franc/handopen.gif" width="20px"><image width="380" src='+image_url+'>';
+          
+          document.body.appendChild(el);
+          $("body").append(el);
+
+        };
+
+        function add_youtube(){
+            var youtube_id = $('#youtube_id').val();
+            if (!youtube_id){return};
+
+            var el =  document.createElement("div")
+            el.className = 'draggable overlay translucent';
+            el.innerHTML = '<img src="http://okfoc.us/franc/handopen.gif" width="20px"><iframe width="280" height="157" src="https://www.youtube.com/embed/mh45igK4Esw?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
+            
+            document.body.appendChild(el);
+            $("body").append(el);
+            
+        };
+        
+
+    </script>
+
+    <!-- Draggable script code -->
+    <script type="text/javascript">
+        interact('.draggable')
+          .draggable({
+            // enable inertial throwing
+            inertia: true,
+            // keep the element within the area of it's parent
+            // restrict: {
+            //   restriction: "parent",
+            //   endOnly: true,
+            //   elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+            // },
+            // enable autoScroll
+            autoScroll: true,
+
+            // call this function on every dragmove event
+            onmove: dragMoveListener,
+            // call this function on every dragend event
+            onend: function (event) {
+              var textEl = event.target.querySelector('p');
+
+              textEl && (textEl.textContent =
+                'moved a distance of '
+                + (Math.sqrt(event.dx * event.dx +
+                             event.dy * event.dy)|0) + 'px');
+            }
+          });
+
+          function dragMoveListener (event) {
+              var target = event.target,
+                  // keep the dragged position in the data-x/data-y attributes
+                  x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                  y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+              // translate the element
+              target.style.webkitTransform =
+              target.style.transform =
+                'translate(' + x + 'px, ' + y + 'px)';
+
+              // update the posiion attributes
+              target.setAttribute('data-x', x);
+              target.setAttribute('data-y', y);
+            }
+    </script>
+
+    <!-- Video element JS -->
+    <script type="text/javascript">
+
+      var video = document.querySelector("#videoElement");
+      var hdConstraints = {
+        video: {
+          mandatory: {
+            minWidth: 1280,
+            minHeight: 720
+          }
+        }
+      };
+      var vgaConstraints = {
+        video: {
+          mandatory: {
+            maxWidth: 640,
+            maxHeight: 360
+          }
+        }
+      };
+
+      var constraints = {
+          audio: true,
+          video: {
+              height: { min: 1024, ideal: 1280, max: 1920 },
+              width: { min: 576, ideal: 720, max: 1080 },
+          }
+      };
+
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+       
+      if (navigator.getUserMedia) {       
+          //navigator.getUserMedia({video: true}, handleVideo, videoError);
+          navigator.getUserMedia(constraints, handleVideo, videoError);
+          //navigator.getUserMedia(audio: true, video: { width: 1280, height: 720 }, handleVideo, videoError);
+      }
+       
+      function handleVideo(stream) {
+          video.src = window.URL.createObjectURL(stream);
+      }
+      
+      // navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+      //     function(stream) {
+      //       var video = document.querySelector('video');
+      //       video.src = window.URL.createObjectURL(stream);
+      //       video.onloadedmetadata = function(e) {
+      //       video.play();
+      //     };
+      //   },
+      //   function(err) {
+      //     console.log("The following error occured: " + err.name);
+      //   }
+      // );
+
+      function videoError(e) {
+          // do something
+      }
+    </script>
+      
+
+</html>
